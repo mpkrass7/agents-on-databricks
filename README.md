@@ -19,11 +19,13 @@ It leverages Databricks-hosted resources, Databricks Genie rooms, and a large la
 ### 1. **Databricks Genie Rooms**
 The app uses Genie rooms to power its data tools:
 - **Store Performance Genie Room:**
-  [View Room](https://adb-984752964297111.11.azuredatabricks.net/genie/rooms/01f023ae84651418a1203b194dff21a9?o=984752964297111)
+For revenue, BOPIS, forecasts, store performance metrics
+ 
 - **Product Inventory Genie Room:**
-  [View Room](https://adb-984752964297111.11.azuredatabricks.net/genie/rooms/01f02c2c29211c388b9b5b9b6f5a80c9?o=984752964297111)
+For inventory snapshots, product details etc.
+  
 - **Business Conduct Policy Table:**
-  [View Table](https://adb-984752964297111.11.azuredatabricks.net/explore/data/main/sgfs/retail_conduct_policy?o=984752964297111&activeTab=overview)
+For querying and finding out specific information about vendor conduct policy
 
 These Genie rooms are used by the app's tools to fetch live data and answer user questions.
 
@@ -59,7 +61,7 @@ These Genie rooms are used by the app's tools to fetch live data and answer user
 
 ## Vector Search Index
 
-The vector search index was hydrated using the process highlighted in the [vector_search_setup.png](./vector_search_setup.png) file in this repository.
+The vector search index was hydrated using the process highlighted in the [vector_search_setup.png](./vectorsearch-tooluse.png) file in this repository.
 
 ---
 
