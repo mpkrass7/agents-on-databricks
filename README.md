@@ -90,3 +90,31 @@ The vector search index was hydrated using the process highlighted in the [vecto
 - Access to a Databricks workspace with Genie enabled
 - A Databricks-hosted LLM (or compatible OpenAI endpoint)
 
+
+## To Run the App Locally
+1. Set up a .env file with the following details
+note: you only need the `MLFLOW_EXPERIMENT_ID` if you want to enable montioring or write to an existing external monitor
+```
+DATABRICKS_TOKEN=
+DATABRICKS_HOST=
+DATABRICKS_BASE_URL=
+DATABRICKS_MODEL=
+GENIE_SPACE_ID=
+GENIE_SPACE_PRODUCT_INV_ID='
+MLFLOW_EXPERIMENT_ID=
+```
+2. Create a virtual env locally using uv `uv venv --python 3.12`
+3. Then, install the requirements using `uv pip install -r requirements.txt`
+4. Run the app `streamlit run streamlit_multi_genie_tools.py`
+5. You might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`
+
+Example `config.toml` file
+```
+[theme]
+base="light"
+primaryColor="#FF4B4B"
+backgroundColor="#FFFFFF"
+secondaryBackgroundColor="#F0F2F6"
+textColor="#31333F"
+font="sans serif"
+```
