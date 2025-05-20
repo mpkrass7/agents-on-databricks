@@ -20,7 +20,7 @@ The repo also shows how to deploy this app to Databricks Apps.
 
 The following is a quick demo of the working application:
 
-![Demo of the Store Intelligence Assistant](Demo-Agent-Polling-Genie-Rooms-VectorIndexes.gif)
+![Demo of the Store Intelligence Analyst](Demo-Agent-Polling-Genie-Rooms-VectorIndexes.gif)
 
 
 ## Key Databricks Resources
