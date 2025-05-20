@@ -12,8 +12,16 @@ This app is a conversational assistant that helps users query and analyze:
 - 📈 Monthly Sales Forecasts for stores
 
 It leverages Databricks-hosted resources, Databricks Genie rooms, and a large language model (LLM) to provide on-demand, context-aware answers.
+The repo also shows how to deploy this app to Databricks Apps.
 
 ---
+
+## Quick Demo
+
+The following is a quick demo of the working application:
+
+![Demo of the Store Intelligence Assistant](Demo-Agent-Polling-Genie-Rooms-VectorIndexes.gif)
+
 
 ## Key Databricks Resources
 
