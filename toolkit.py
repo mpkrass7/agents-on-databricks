@@ -1,5 +1,5 @@
 # %%
-from agents import function_tool
+from agents import function_tool, set_tracing_disabled
 import os
 import requests
 import time
@@ -10,23 +10,27 @@ from unitycatalog.ai.core.databricks import (
 from databricks.sdk import WorkspaceClient
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
-from openai import OpenAI
 from rich import print
 import streamlit as st
+
 # %%
 # Load environment variables
-load_dotenv("/Users/sathish.gangichetty/Documents/openai-agents/apps/.env-local")
+load_dotenv(".env")
 
 # Initialize environment variables
 BASE_URL = os.getenv("DATABRICKS_BASE_URL") or ""
 API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or ""
+set_tracing_disabled(True)
+
 
 # Initialize clients
 client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
 w = WorkspaceClient(
-    host=os.getenv("DATABRICKS_HOST"), token=os.getenv("DATABRICKS_TOKEN")
+    host=os.getenv("DATABRICKS_HOST"),
+    token=os.getenv("DATABRICKS_TOKEN"),
+    auth_type="pat",
 )
 dbclient = DatabricksFunctionClient(client=w)
 

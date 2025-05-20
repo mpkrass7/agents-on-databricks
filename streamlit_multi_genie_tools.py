@@ -1,7 +1,7 @@
 import streamlit as st
 from dotenv import load_dotenv
 import os
-from agents import Agent, OpenAIChatCompletionsModel, Runner
+from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabled
 from openai import AsyncOpenAI
 from databricks.sdk import WorkspaceClient
 import asyncio
@@ -23,13 +23,14 @@ warnings.filterwarnings("ignore", category=ResourceWarning)
 # Suppress warnings that mention AttributeError in their message
 warnings.filterwarnings("ignore", message=".*AttributeError.*")
 
-load_dotenv("/Users/sathish.gangichetty/Documents/openai-agents/apps/.env")
+load_dotenv(".env")
 
 MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or ""
 BASE_URL = os.getenv("DATABRICKS_BASE_URL") or ""
 API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 MLFLOW_EXPERIMENT_ID = os.getenv("MLFLOW_EXPERIMENT_ID") or ""
+set_tracing_disabled(True)
 
 # Initialize MLflow logging if configured (make this optional)
 try:
@@ -46,6 +47,7 @@ except Exception as e:
 # Initialize clients
 client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
 
+
 # Register a cleanup function to properly close the async client at exit
 async def close_client():
     try:
@@ -53,6 +55,7 @@ async def close_client():
         logging.info("AsyncOpenAI client closed successfully")
     except Exception as e:
         logging.warning(f"Error closing AsyncOpenAI client: {str(e)}")
+
 
 # Register the cleanup to run at exit
 atexit.register(lambda: asyncio.run(close_client()))
@@ -164,17 +167,19 @@ agent = Agent(
     tools=[
         get_business_conduct_policy_info,
         get_store_performance_info,
-        get_product_inventory_info
+        get_product_inventory_info,
     ],
 )
+
 
 @mlflow.trace(span_type="AGENT")
 async def poll_runner(agent=agent, chat_history=None, prompt=None):
     print(f"Chat history:\n{chat_history}\n\nUser's latest question: {prompt}")
     return await Runner.run(
-                agent,
-                f"Chat history:\n{chat_history}\n\nUser's latest question: {prompt}",
-            )
+        agent,
+        f"Chat history:\n{chat_history}\n\nUser's latest question: {prompt}",
+    )
+
 
 # Initialize session state for chat history
 if "messages" not in st.session_state:
@@ -214,6 +219,7 @@ with st.container():
                 <li>What was the total sales for store 110 last year?</li>
                 <li>Based on our current inventory snapshot, give me the store id that has the highest on order for baby products?</li>
                 <li>What is the overtime policy for vendors?</li>
+                <li>Generate sales forecast for store 110 for the next 6 months?</li>
             </ul>
         </div>
         """,
