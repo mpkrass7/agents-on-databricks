@@ -26,24 +26,21 @@ The following is a quick demo of the working application:
 ## Key Databricks Resources
 
 ### 1. **Databricks Genie Rooms**
-The app uses Genie rooms to power its data tools:
+The app uses Genie rooms to power its data tools. These Genie rooms are used by the app's tools to fetch live data and answer user questions.
 - **Store Performance Genie Room:**
 For revenue, BOPIS, forecasts, store performance metrics
  
 - **Product Inventory Genie Room:**
 For inventory snapshots, product details etc.
-  
+
+### 2. **Databricks Vector Search**  
 - **Business Conduct Policy Table:**
-For querying and finding out specific information about vendor conduct policy
+For querying and finding out specific information about vendor conduct policy using a vector index
 
-These Genie rooms are used by the app's tools to fetch live data and answer user questions.
-
-### 2. **LLM (Large Language Model)**
+### 3. **LLM (Large Language Model)**
 - The app uses a Databricks-hosted LLM, specified by the `DATABRICKS_MODEL` environment variable.
-- The LLM is accessed via the OpenAI-compatible API endpoint provided by Databricks.
+- The LLM is accessed via the OpenAI-compatible API endpoint provided by Databricks Mosaic AI Gateway.
 - All chat and tool responses are generated or orchestrated by this model.
-
-
 
 ---
 
