@@ -122,7 +122,7 @@ font="sans serif"
 
 ---
 
-## Deploying to Databricks Apps (on AWS)
+## Deploying to Databricks Apps
 
 You can deploy this Streamlit app to your Databricks workspace as a Databricks App for secure, scalable access. Here's how:
 
