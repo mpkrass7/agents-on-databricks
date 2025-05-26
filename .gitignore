@@ -1,4 +1,5 @@
 .env
+.env.*
 .venv/ 
 mlruns
 # Byte-compiled / optimized / DLL files
