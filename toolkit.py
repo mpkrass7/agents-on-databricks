@@ -41,7 +41,7 @@ def get_store_performance_info(user_query: str):
     For us, we use this to get information about the store location, store performance, returns, BOPIS(buy online pick up in store) etc.
     """
     st.write(
-        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='https://adb-984752964297111.11.azuredatabricks.net/genie/rooms/01f023ae84651418a1203b194dff21a9?o=984752964297111' target='_blank'>get_store_performance_info</a> tool was called</span>",
+        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='<REPLACE_ME_WITH_URL_TO_STORE_PERFORMANCE_GENIE_ROOM_URL>' target='_blank'>get_store_performance_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     space_id = os.getenv("GENIE_SPACE_ID")
@@ -77,7 +77,7 @@ def get_product_inventory_info(user_query: str):
     For us, we use this to get information about products and the current inventory snapshot across stores
     """
     st.write(
-        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='https://adb-984752964297111.11.azuredatabricks.net/genie/rooms/01f02c2c29211c388b9b5b9b6f5a80c9?o=984752964297111' target='_blank'>get_product_inventory_info</a> tool was called</span>",
+        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='<REPLACE_ME_WITH_URL_TO_PRODUCT_INVENTORY_GENIE_ROOM_URL>' target='_blank'>get_product_inventory_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     space_id = os.getenv("GENIE_SPACE_PRODUCT_INV_ID")
@@ -110,7 +110,7 @@ def get_product_inventory_info(user_query: str):
 @function_tool
 def get_business_conduct_policy_info(search_query: str) -> FunctionExecutionResult:
     st.write(
-        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='https://adb-984752964297111.11.azuredatabricks.net/explore/data/main/sgfs/retail_conduct_policy?o=984752964297111&activeTab=overview' target='_blank'>get_business_conduct_policy_info</a> tool was called</span>",
+        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='<REPLACE_ME_WITH_WORKSPACE_URL_TO_BUSINESS_CONDUCT_POLICY_UC_TOOL>' target='_blank'>get_business_conduct_policy_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     print("INFO: `get_business_conduct_policy_info` tool called")
