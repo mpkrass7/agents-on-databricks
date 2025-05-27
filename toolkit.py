@@ -41,10 +41,10 @@ def get_store_performance_info(user_query: str):
     For us, we use this to get information about the store location, store performance, returns, BOPIS(buy online pick up in store) etc.
     """
     st.write(
-        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='<REPLACE_ME_WITH_URL_TO_STORE_PERFORMANCE_GENIE_ROOM_URL>' target='_blank'>get_store_performance_info</a> tool was called</span>",
+        f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{os.getenv('DATABRICKS_HOST')}/genie/rooms/{os.getenv('GENIE_SPACE_STORE_PERFORMANCE_ID')}' target='_blank'>get_store_performance_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
-    space_id = os.getenv("GENIE_SPACE_ID")
+    space_id = os.getenv("GENIE_SPACE_STORE_PERFORMANCE_ID")
     print(f"INFO: `get_store_performance_info` tool called with space_id: {space_id}")
     timeout = 60.0
     poll_interval = 2.0
@@ -77,7 +77,7 @@ def get_product_inventory_info(user_query: str):
     For us, we use this to get information about products and the current inventory snapshot across stores
     """
     st.write(
-        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='<REPLACE_ME_WITH_URL_TO_PRODUCT_INVENTORY_GENIE_ROOM_URL>' target='_blank'>get_product_inventory_info</a> tool was called</span>",
+        f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{os.getenv('DATABRICKS_HOST')}/genie/rooms/{os.getenv('GENIE_SPACE_PRODUCT_INV_ID')}' target='_blank'>get_product_inventory_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     space_id = os.getenv("GENIE_SPACE_PRODUCT_INV_ID")
@@ -115,6 +115,6 @@ def get_business_conduct_policy_info(search_query: str) -> FunctionExecutionResu
     )
     print("INFO: `get_business_conduct_policy_info` tool called")
     return dbclient.execute_function(
-        function_name="juan_dev.genai.retail_club_conduct",
+        function_name="<REPLACE_ME_WITH_3_LEVEL_NAMESPACE_FOR_BUSINESS_CONDUCT_POLICY_UC_TOOL, e.g. catalog.schema.function>",
         parameters={"search_query": search_query},
     )
