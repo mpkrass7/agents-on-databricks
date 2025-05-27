@@ -109,7 +109,7 @@ GENIE_SPACE_ID=
 GENIE_SPACE_PRODUCT_INV_ID='
 MLFLOW_EXPERIMENT_ID=
 ```
-2. In `toolkit.py`, replace the tool call links with the links to the tools in your workspace - see <REPLACE_ME> .
+2. In `toolkit.py`, Update code sections containing <REPLACE_ME...>.
 3. Create a virtual env locally using uv `uv venv --python 3.12`
 4. Then, install the requirements using `uv pip install -r requirements.txt`
 5. Run the app `streamlit run streamlit_multi_genie_tools.py` (you might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`)

@@ -242,17 +242,18 @@ if prompt := st.chat_input(
 
     # Get assistant response
     try:
-        # Run the agent asynchronously with chat history
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        # Include chat history in the context
-        chat_history = "\n".join(
-            [f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages]
-        )
-        result = loop.run_until_complete(
-            poll_runner(agent=agent, chat_history=chat_history, prompt=prompt)
-        )
-        response = result.final_output
+        with st.spinner("Thinking..."):
+            # Run the agent asynchronously with chat history
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            # Include chat history in the context
+            chat_history = "\n".join(
+                [f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages]
+            )
+            result = loop.run_until_complete(
+                poll_runner(agent=agent, chat_history=chat_history, prompt=prompt)
+            )
+            response = result.final_output
     except Exception as e:
         response = f"An error occurred: {str(e)}"
 
