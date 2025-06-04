@@ -1,17 +1,15 @@
 # %%
-from agents import function_tool, set_tracing_disabled
 import os
-import requests
 import time
-from unitycatalog.ai.core.databricks import (
-    DatabricksFunctionClient,
-    FunctionExecutionResult,
-)
+
+import streamlit as st
+from agents import function_tool, set_tracing_disabled
 from databricks.sdk import WorkspaceClient
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from rich import print
-import streamlit as st
+from unitycatalog.ai.core.databricks import (DatabricksFunctionClient,
+                                             FunctionExecutionResult)
 
 # %%
 # Load environment variables
@@ -21,7 +19,6 @@ load_dotenv(".env")
 BASE_URL = os.getenv("DATABRICKS_BASE_URL") or ""
 API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or ""
 set_tracing_disabled(True)
 
 
@@ -38,7 +35,7 @@ dbclient = DatabricksFunctionClient(client=w)
 @function_tool
 def get_store_performance_info(user_query: str):
     """
-    For us, we use this to get information about the store location, store performance, returns, BOPIS(buy online pick up in store) etc.
+    Provide information about the store location, store performance, returns, BOPIS(buy online pick up in store) etc.
     """
     st.write(
         f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{os.getenv('DATABRICKS_HOST')}/genie/rooms/{os.getenv('GENIE_SPACE_STORE_PERFORMANCE_ID')}/monitoring' target='_blank'>get_store_performance_info</a> tool was called</span>",
@@ -74,7 +71,7 @@ def get_store_performance_info(user_query: str):
 @function_tool
 def get_product_inventory_info(user_query: str):
     """
-    For us, we use this to get information about products and the current inventory snapshot across stores
+    Provide information about products and the current inventory snapshot across stores.
     """
     st.write(
         f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{os.getenv('DATABRICKS_HOST')}/genie/rooms/{os.getenv('GENIE_SPACE_PRODUCT_INV_ID')}/monitoring' target='_blank'>get_product_inventory_info</a> tool was called</span>",

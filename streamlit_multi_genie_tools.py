@@ -1,20 +1,20 @@
-import streamlit as st
-from dotenv import load_dotenv
-import os
-from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabled
-from openai import AsyncOpenAI
-from databricks.sdk import WorkspaceClient
 import asyncio
-from toolkit import (
-    get_store_performance_info,
-    get_product_inventory_info,
-    get_business_conduct_policy_info,
-)
-import mlflow
-from mlflow.tracing.destination import Databricks
-import logging
-import warnings
 import atexit
+import logging
+import os
+import warnings
+
+import mlflow
+import streamlit as st
+from agents import (Agent, OpenAIChatCompletionsModel, Runner,
+                    set_tracing_disabled)
+from databricks.sdk import WorkspaceClient
+from dotenv import load_dotenv
+from mlflow.tracing.destination import Databricks
+from openai import AsyncOpenAI
+
+from toolkit import (get_business_conduct_policy_info,
+                     get_product_inventory_info, get_store_performance_info)
 
 # Suppress the AsyncHttpxClientWrapper.__del__ warning
 warnings.filterwarnings("ignore", message=".*AsyncHttpxClientWrapper.__del__.*")
@@ -26,7 +26,6 @@ warnings.filterwarnings("ignore", message=".*AttributeError.*")
 load_dotenv(".env")
 
 MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or ""
 BASE_URL = os.getenv("DATABRICKS_BASE_URL") or ""
 API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 MLFLOW_EXPERIMENT_ID = os.getenv("MLFLOW_EXPERIMENT_ID") or ""
