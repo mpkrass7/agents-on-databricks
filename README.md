@@ -146,8 +146,7 @@ env:
     valueFrom: 'token'  # Secret name in Databricks
   - name: 'DATABRICKS_HOST'
     valueFrom: 'DATABRICKS_HOST'
-  - name: 'DATABRICKS_BASE_URL'
-    valueFrom: 'DATABRICKS_BASE_URL'
+
   - name: 'DATABRICKS_MODEL'
     valueFrom: 'DATABRICKS_MODEL'
   - name: 'GENIE_SPACE_ID'

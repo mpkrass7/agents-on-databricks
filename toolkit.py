@@ -8,27 +8,31 @@ from databricks.sdk import WorkspaceClient
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from rich import print
-from unitycatalog.ai.core.databricks import (DatabricksFunctionClient,
-                                             FunctionExecutionResult)
+from unitycatalog.ai.core.databricks import DatabricksFunctionClient
+from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
+
 
 # %%
 # Load environment variables
 load_dotenv(".env")
 
 # Initialize environment variables
-BASE_URL = os.getenv("DATABRICKS_BASE_URL") or ""
-API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
+DATABRICKS_SERVING_ENDPOINT_NAME = os.getenv("DATABRICKS_SERVING_ENDPOINT_NAME") or ""
+DATABRICKS_HOST = os.getenv("DATABRICKS_HOST") or ""
+API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 set_tracing_disabled(True)
 
-
 # Initialize clients
-client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
 w = WorkspaceClient(
     host=os.getenv("DATABRICKS_HOST"),
     token=os.getenv("DATABRICKS_TOKEN"),
     auth_type="pat",
 )
+
+sync_client = w.serving_endpoints.get_open_ai_client()
+client = AsyncOpenAI(base_url=sync_client.base_url, api_key=API_KEY)
+# client = AsyncOpenAI()
 dbclient = DatabricksFunctionClient(client=w)
 
 
@@ -105,13 +109,17 @@ def get_product_inventory_info(user_query: str):
 
 
 @function_tool
-def get_business_conduct_policy_info(search_query: str) -> FunctionExecutionResult:
+def get_business_conduct_policy_info(search_query: str) -> str:
     st.write(
-        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='<REPLACE_ME_WITH_WORKSPACE_URL_TO_BUSINESS_CONDUCT_POLICY_UC_TOOL>' target='_blank'>get_business_conduct_policy_info</a> tool was called</span>",
+        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='https://adb-1720970340056130.10.azuredatabricks.net/explore/data/models/mk_fiddles/genie_multi_agent/retail_code_of_conduct_bot?o=1720970340056130' target='_blank'>get_business_conduct_policy_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     print("INFO: `get_business_conduct_policy_info` tool called")
-    return dbclient.execute_function(
-        function_name="<REPLACE_ME_WITH_3_LEVEL_NAMESPACE_FOR_BUSINESS_CONDUCT_POLICY_UC_TOOL, e.g. catalog.schema.function>",
-        parameters={"search_query": search_query},
+    messages = [ChatMessage(content=search_query, role=ChatMessageRole.USER)]
+    response = w.serving_endpoints.query(
+        name=DATABRICKS_SERVING_ENDPOINT_NAME,
+        messages=messages,
+        temperature=1.0,
+        stream=False,
     )
+    return response.choices[0].message.content

@@ -6,15 +6,17 @@ import warnings
 
 import mlflow
 import streamlit as st
-from agents import (Agent, OpenAIChatCompletionsModel, Runner,
-                    set_tracing_disabled)
+from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabled
 from databricks.sdk import WorkspaceClient
 from dotenv import load_dotenv
 from mlflow.tracing.destination import Databricks
 from openai import AsyncOpenAI
 
-from toolkit import (get_business_conduct_policy_info,
-                     get_product_inventory_info, get_store_performance_info)
+from toolkit import (
+    get_business_conduct_policy_info,
+    get_product_inventory_info,
+    get_store_performance_info,
+)
 
 # Suppress the AsyncHttpxClientWrapper.__del__ warning
 warnings.filterwarnings("ignore", message=".*AsyncHttpxClientWrapper.__del__.*")
@@ -26,9 +28,10 @@ warnings.filterwarnings("ignore", message=".*AttributeError.*")
 load_dotenv(".env")
 
 MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
-BASE_URL = os.getenv("DATABRICKS_BASE_URL") or ""
+DATABRICKS_HOST = os.getenv("DATABRICKS_HOST") or ""
 API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 MLFLOW_EXPERIMENT_ID = os.getenv("MLFLOW_EXPERIMENT_ID") or ""
+
 set_tracing_disabled(True)
 
 # Initialize MLflow logging if configured (make this optional)
@@ -44,7 +47,14 @@ except Exception as e:
     logging.warning(f"Failed to initialize MLflow logging: {str(e)}")
 
 # Initialize clients
-client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
+w = WorkspaceClient(
+    host=os.getenv("DATABRICKS_HOST"),
+    token=os.getenv("DATABRICKS_TOKEN"),
+    auth_type="pat",
+)
+sync_client = w.serving_endpoints.get_open_ai_client()
+client = AsyncOpenAI(base_url=sync_client.base_url, api_key=API_KEY)
+# client = AsyncOpenAI()
 
 
 # Register a cleanup function to properly close the async client at exit
@@ -247,7 +257,10 @@ if prompt := st.chat_input(
             asyncio.set_event_loop(loop)
             # Include chat history in the context
             chat_history = "\n".join(
-                [f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages]
+                [
+                    f"{msg['role']}: {msg['content']}"
+                    for msg in st.session_state.messages
+                ]
             )
             result = loop.run_until_complete(
                 poll_runner(agent=agent, chat_history=chat_history, prompt=prompt)
