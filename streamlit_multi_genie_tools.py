@@ -1,16 +1,29 @@
 import asyncio
 import atexit
 import logging
-import os
 import warnings
 
 import mlflow
 import streamlit as st
 from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabled
 from databricks.sdk import WorkspaceClient
-from dotenv import load_dotenv
 from mlflow.tracing.destination import Databricks
 from openai import AsyncOpenAI
+from databricks.sdk.core import Config
+import yaml
+
+
+if "databricks_model" not in st.session_state:
+    with open("app_config.yaml") as f:
+        conf = yaml.safe_load(f)
+        st.session_state.DATABRICKS_MODEL = conf["DATABRICKS_MODEL"]
+        st.session_state.GENIE_SPACE_STORE_PERFORMANCE_ID = conf[
+            "GENIE_SPACE_STORE_PERFORMANCE_ID"
+        ]
+        st.session_state.GENIE_SPACE_PRODUCT_INV_ID = conf["GENIE_SPACE_PRODUCT_INV_ID"]
+        st.session_state.DATABRICKS_SERVING_ENDPOINT_NAME = conf["DATABRICKS_SERVING_ENDPOINT_NAME"]
+        st.session_state.MLFLOW_EXPERIMENT_ID = conf["MLFLOW_EXPERIMENT_ID"]
+
 
 from toolkit import (
     get_business_conduct_policy_info,
@@ -25,20 +38,18 @@ warnings.filterwarnings("ignore", category=ResourceWarning)
 # Suppress warnings that mention AttributeError in their message
 warnings.filterwarnings("ignore", message=".*AttributeError.*")
 
-load_dotenv(".env")
 
-MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST") or ""
-API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
-MLFLOW_EXPERIMENT_ID = os.getenv("MLFLOW_EXPERIMENT_ID") or ""
+DB_CONFIG = Config()
 
 set_tracing_disabled(True)
 
 # Initialize MLflow logging if configured (make this optional)
 try:
-    if MLFLOW_EXPERIMENT_ID:
+    if st.session_state.MLFLOW_EXPERIMENT_ID:
         mlflow.set_registry_uri("databricks")
-        mlflow.tracing.set_destination(Databricks(experiment_id=MLFLOW_EXPERIMENT_ID))
+        mlflow.tracing.set_destination(
+            Databricks(experiment_id=st.session_state.MLFLOW_EXPERIMENT_ID)
+        )
         mlflow.openai.autolog()
         logging.info("MLflow logging enabled")
     else:
@@ -47,14 +58,9 @@ except Exception as e:
     logging.warning(f"Failed to initialize MLflow logging: {str(e)}")
 
 # Initialize clients
-w = WorkspaceClient(
-    host=os.getenv("DATABRICKS_HOST"),
-    token=os.getenv("DATABRICKS_TOKEN"),
-    auth_type="pat",
-)
+w = WorkspaceClient()
 sync_client = w.serving_endpoints.get_open_ai_client()
-client = AsyncOpenAI(base_url=sync_client.base_url, api_key=API_KEY)
-# client = AsyncOpenAI()
+client = AsyncOpenAI(base_url=sync_client.base_url, api_key=DB_CONFIG.token)
 
 
 # Register a cleanup function to properly close the async client at exit
@@ -70,9 +76,7 @@ async def close_client():
 atexit.register(lambda: asyncio.run(close_client()))
 
 try:
-    w = WorkspaceClient(
-        host=os.getenv("DATABRICKS_HOST"), token=os.getenv("DATABRICKS_TOKEN")
-    )
+    w = WorkspaceClient()
 except Exception as e:
     logging.warning(f"Failed to initialize Databricks workspace client: {str(e)}")
     w = None
@@ -168,11 +172,14 @@ agent = Agent(
     instructions="""You are a helpful assistant that can answer questions about the store performance, returns, BOPIS(buy online pick up in store) etc. 
     You can optionally choose to use the tools provided to you to answer the questions. 
     If the question is not related to store location, performance or policy, you can answer the question based on your knowledge or say that you don't know.
-    Use the get_store_performance_info tool to get the store performance or location information. When forecasts are returned, present the table as is. Additionally, add a small note to the table to say that this is an on-demand forecast for the give store and forecasting horizon.
+    Use the get_store_performance_info tool to get the store performance or location information. When forecasts are returned, present the table as is. 
+    Additionally, add a small note to the table to say that this is an on-demand forecast for the give store and forecasting horizon.
     If any policy is asked, use the get_business_conduct_policy_info tool to get the policy information.
     Use the get_product_inventory_info tool to get the product inventory information.
     You have access to the full chat history, so you can reference previous messages and maintain context throughout the conversation.""",
-    model=OpenAIChatCompletionsModel(model=MODEL_NAME, openai_client=client),
+    model=OpenAIChatCompletionsModel(
+        model=st.session_state.DATABRICKS_MODEL, openai_client=client
+    ),
     tools=[
         get_business_conduct_policy_info,
         get_store_performance_info,
@@ -205,7 +212,7 @@ with st.container():
         st.markdown(
             """
         <div class="card">
-            <h3>Welcome to Store Intelligence Assistant!</h3>
+            <h3>Hi, I'm a Store Intelligence Assistant!</h3>
             <p>I can help you with:</p>
             <ul>
                 <li>📊 Store performance metrics</li>

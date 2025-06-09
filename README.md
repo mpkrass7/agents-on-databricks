@@ -98,22 +98,19 @@ The vector search index was hydrated using the process highlighted in the [vecto
 
 
 ## To Run the App Locally
-1. Set up a .env file with the following details
+1. Create a virtual env locally using uv `uv venv --python 3.12`
+2. Then, install the requirements using `uv pip install -r requirements.txt`
+3. Make sure your app_config.yaml file is set up with the required variables. You can fill these in yourself or create them by running `scripts/build_dependencies.py`. 
 note: you only need the `MLFLOW_EXPERIMENT_ID` if you want to enable montioring or write to an existing external monitor
 ```
-DATABRICKS_TOKEN=
-DATABRICKS_HOST=
-DATABRICKS_BASE_URL=
-DATABRICKS_MODEL=
-GENIE_SPACE_ID=
-GENIE_SPACE_PRODUCT_INV_ID='
-MLFLOW_EXPERIMENT_ID=
+DATABRICKS_MODEL: "databricks-claude-3-7-sonnet"
+GENIE_SPACE_STORE_PERFORMANCE_ID: ""
+GENIE_SPACE_PRODUCT_INV_ID: ""
+MLFLOW_EXPERIMENT_ID: ""
+DATABRICKS_SERVING_ENDPOINT_NAME: ""
 ```
-2. In `toolkit.py`, Update code sections containing <REPLACE_ME...>.
-3. Create a virtual env locally using uv `uv venv --python 3.12`
-4. Then, install the requirements using `uv pip install -r requirements.txt`
-5. Run the app `streamlit run streamlit_multi_genie_tools.py` (you might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`)
-6. You might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`
+4. Run the app `streamlit run streamlit_multi_genie_tools.py` (you might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`)
+5. You might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`
 
 Example `config.toml` file
 ```
@@ -132,33 +129,7 @@ font="sans serif"
 
 You can deploy this Streamlit app to your Databricks workspace as a Databricks App for secure, scalable access. Here's how:
 
-### 1. Prepare `app.yaml` and Secrets
-
-- The app uses an `app.yaml` file to define how it runs and which environment variables it needs.
-- **Best practice:** Use [Databricks secrets](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/app-development#best-practice-use-secrets-to-store-sensitive-information-for-a-databricks-app) to store sensitive values (tokens, workspace URLs, model IDs, etc).
-- In your Databricks workspace, add secrets for each required variable (see below).
-
-Example `app.yaml`:
-```yaml
-command: ['streamlit', 'run', 'streamlit_multi_genie_tools.py']
-env:
-  - name: 'DATABRICKS_TOKEN'
-    valueFrom: 'token'  # Secret name in Databricks
-  - name: 'DATABRICKS_HOST'
-    valueFrom: 'DATABRICKS_HOST'
-
-  - name: 'DATABRICKS_MODEL'
-    valueFrom: 'DATABRICKS_MODEL'
-  - name: 'GENIE_SPACE_ID'
-    valueFrom: 'GENIE_SPACE_ID'
-  - name: 'GENIE_SPACE_PRODUCT_INV_ID'
-    valueFrom: 'GENIE_SPACE_PRODUCT_INV_ID'
-  - name: 'MLFLOW_EXPERIMENT_ID'
-    valueFrom: 'MLFLOW_EXPERIMENT_ID'
-```
-- Each `valueFrom` should match the name of a secret you've configured in your Databricks workspace (see [Databricks docs](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/app-development#best-practice-use-secrets-to-store-sensitive-information-for-a-databricks-app)).
-
-### 2. Create the App in Your Workspace
+### 1. Create the App in Your Workspace
 
 In your terminal, run:
 ```bash
@@ -166,24 +137,24 @@ databricks apps create <app-name>
 ```
 Replace `<app-name>` with your desired app name (e.g., `store-intel-assistant`).
 
-### 3. Sync Your Local App to Databricks Workspace
+### 2. Sync Your Local App to Databricks Workspace
 
 From your project directory, run:
 ```bash
-databricks sync --watch . /Workspace/Users/<your-user-or-group>/<app-name>
+databricks sync --watch . $APP_WORKSPACE_PATH
 ```
 - This will upload your code and watch for changes.
 - Exclude files/folders using `.gitignore` if needed.
 
-### 4. Deploy the App
+### 3. Deploy the App
 
 After syncing, deploy the app with:
 ```bash
-databricks apps deploy <app-name> --source-code-path /Workspace/Users/<your-user-or-group>/<app-name>
+databricks apps deploy <app-name> --source-code-path $APP_WORKSPACE_PATH
 ```
 - Replace `<app-name>` and the workspace path as appropriate.
 
-### 5. View and Use the App
+### 4. View and Use the App
 - Go to your Databricks workspace, click **Compute > Apps** tab, and find your app.
 - Click the app name to view deployment status and launch the Streamlit UI.
 

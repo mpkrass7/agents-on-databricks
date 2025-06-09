@@ -5,35 +5,22 @@ import time
 import streamlit as st
 from agents import function_tool, set_tracing_disabled
 from databricks.sdk import WorkspaceClient
-from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from rich import print
-from unitycatalog.ai.core.databricks import DatabricksFunctionClient
 from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
+from databricks.sdk.core import Config
+from databricks.vector_search.client import VectorSearchClient
 
-
-# %%
-# Load environment variables
-load_dotenv(".env")
 
 # Initialize environment variables
-MODEL_NAME = os.getenv("DATABRICKS_MODEL") or ""
-DATABRICKS_SERVING_ENDPOINT_NAME = os.getenv("DATABRICKS_SERVING_ENDPOINT_NAME") or ""
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST") or ""
-API_KEY = os.getenv("DATABRICKS_TOKEN") or ""
 set_tracing_disabled(True)
 
 # Initialize clients
-w = WorkspaceClient(
-    host=os.getenv("DATABRICKS_HOST"),
-    token=os.getenv("DATABRICKS_TOKEN"),
-    auth_type="pat",
-)
-
+w = WorkspaceClient()
+v_client = VectorSearchClient()
+CONFIG = Config()
 sync_client = w.serving_endpoints.get_open_ai_client()
-client = AsyncOpenAI(base_url=sync_client.base_url, api_key=API_KEY)
-# client = AsyncOpenAI()
-dbclient = DatabricksFunctionClient(client=w)
+client = AsyncOpenAI(base_url=sync_client.base_url, api_key=CONFIG.token)
 
 
 @function_tool
@@ -42,7 +29,7 @@ def get_store_performance_info(user_query: str):
     Provide information about the store location, store performance, returns, BOPIS(buy online pick up in store) etc.
     """
     st.write(
-        f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{os.getenv('DATABRICKS_HOST')}/genie/rooms/{os.getenv('GENIE_SPACE_STORE_PERFORMANCE_ID')}/monitoring' target='_blank'>get_store_performance_info</a> tool was called</span>",
+        f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{CONFIG.host}/genie/rooms/{st.session_state.GENIE_SPACE_STORE_PERFORMANCE_ID}/monitoring' target='_blank'>get_store_performance_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     space_id = os.getenv("GENIE_SPACE_STORE_PERFORMANCE_ID")
@@ -78,7 +65,7 @@ def get_product_inventory_info(user_query: str):
     Provide information about products and the current inventory snapshot across stores.
     """
     st.write(
-        f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{os.getenv('DATABRICKS_HOST')}/genie/rooms/{os.getenv('GENIE_SPACE_PRODUCT_INV_ID')}/monitoring' target='_blank'>get_product_inventory_info</a> tool was called</span>",
+        f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{CONFIG.host}/genie/rooms/{st.session_state.GENIE_SPACE_STORE_PERFORMANCE_ID}/monitoring' target='_blank'>get_product_inventory_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     space_id = os.getenv("GENIE_SPACE_PRODUCT_INV_ID")
@@ -111,15 +98,19 @@ def get_product_inventory_info(user_query: str):
 @function_tool
 def get_business_conduct_policy_info(search_query: str) -> str:
     st.write(
-        "<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='https://adb-1720970340056130.10.azuredatabricks.net/explore/data/models/mk_fiddles/genie_multi_agent/retail_code_of_conduct_bot?o=1720970340056130' target='_blank'>get_business_conduct_policy_info</a> tool was called</span>",
+        f"<span style='color:green;'>[🛠️TOOL-CALL]: the <a href='{CONFIG.host}/explore/data/models/mk_fiddles/genie_multi_agent/retail_code_of_conduct_bot?o=1720970340056130' target='_blank'>get_business_conduct_policy_info</a> tool was called</span>",
         unsafe_allow_html=True,
     )
     print("INFO: `get_business_conduct_policy_info` tool called")
-    messages = [ChatMessage(content=search_query, role=ChatMessageRole.USER)]
-    response = w.serving_endpoints.query(
-        name=DATABRICKS_SERVING_ENDPOINT_NAME,
-        messages=messages,
-        temperature=1.0,
-        stream=False,
-    )
-    return response.choices[0].message.content
+
+
+    vector_search_endpoint_name = "vector-search-multi-agent-genie"
+    index_name = f"{'mk_fiddles'}.{'genie_multi_agent'}.retail_code_of_conduct_index"
+
+    index = v_client.get_index(vector_search_endpoint_name, index_name)
+
+    return index.similarity_search(
+        query_text=search_query, 
+        columns=["sec_id", "text_chunks"],
+        num_results=2
+        )

@@ -104,5 +104,7 @@ dmypy.json
 *.db
 *.sqlite3
 
+.ruff_cache/
+
 .databricks
 .databrickscfg

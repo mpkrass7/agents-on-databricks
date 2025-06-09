@@ -1,0 +1,51 @@
+product_id,product_name,category,unit_cost,unit_price
+1001,Grocery Item 1,Grocery,31.82,41.04
+1002,Grocery Item 2,Grocery,18.84,28.21
+1003,Grocery Item 3,Grocery,66.99,99.37
+1004,Grocery Item 4,Grocery,99.16,135.99
+1005,Grocery Item 5,Grocery,42.28,60.68
+1006,Electronics Item 1,Electronics,47.26,65.29
+1007,Electronics Item 2,Electronics,56.83,84.89
+1008,Electronics Item 3,Electronics,29.17,39.78
+1009,Electronics Item 4,Electronics,28.22,40.61
+1010,Electronics Item 5,Electronics,5.85,8.57
+1011,Apparel Item 1,Apparel,15.56,24.25
+1012,Apparel Item 2,Apparel,27.79,37.58
+1013,Apparel Item 3,Apparel,97.18,151.38
+1014,Apparel Item 4,Apparel,66.31,100.24
+1015,Apparel Item 5,Apparel,35.35,51.18
+1016,Home Item 1,Home,94.24,138.72
+1017,Home Item 2,Home,20.1,30.25
+1018,Home Item 3,Home,23.46,31.82
+1019,Home Item 4,Home,85.56,113.21
+1020,Home Item 5,Home,84.31,114.93
+1021,Office Item 1,Office,36.12,56.33
+1022,Office Item 2,Office,85.64,118.26
+1023,Office Item 3,Office,3.04,4.71
+1024,Office Item 4,Office,44.33,65.83
+1025,Office Item 5,Office,14.94,23.39
+1026,Outdoor Item 1,Outdoor,93.39,132.07
+1027,Outdoor Item 2,Outdoor,28.87,36.94
+1028,Outdoor Item 3,Outdoor,42.01,61.86
+1029,Outdoor Item 4,Outdoor,29.9,37.38
+1030,Outdoor Item 5,Outdoor,29.8,47.54
+1031,Health & Beauty Item 1,Health & Beauty,64.54,86.49
+1032,Health & Beauty Item 2,Health & Beauty,79.35,112.95
+1033,Health & Beauty Item 3,Health & Beauty,17.12,26.37
+1034,Health & Beauty Item 4,Health & Beauty,23.36,35.7
+1035,Health & Beauty Item 5,Health & Beauty,6.73,10.42
+1036,Baby Item 1,Baby,23.99,37.64
+1037,Baby Item 2,Baby,50.43,77.11
+1038,Baby Item 3,Baby,11.9,18.85
+1039,Baby Item 4,Baby,23.34,31.24
+1040,Baby Item 5,Baby,69.74,104.47
+1041,Automotive Item 1,Automotive,45.95,64.65
+1042,Automotive Item 2,Automotive,57.25,71.92
+1043,Automotive Item 3,Automotive,84.6,110.95
+1044,Automotive Item 4,Automotive,26.65,39.61
+1045,Automotive Item 5,Automotive,1.59,2.53
+1046,Seasonal Item 1,Seasonal,26.72,34
+1047,Seasonal Item 2,Seasonal,49,72.21
+1048,Seasonal Item 3,Seasonal,70.57,98.67
+1049,Seasonal Item 4,Seasonal,92.85,123.37
+1050,Seasonal Item 5,Seasonal,39.76,60.94

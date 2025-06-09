@@ -1,0 +1,16 @@
+store_id,store_name,city,state,region,open_date,size_sqft
+101,Club #101,Boston,MA,Northeast,2018-10-09,97808
+102,Club #102,Hyattsville,MD,Mid-Atlantic,2018-01-05,103546
+103,Club #103,Albany,NY,Northeast,2023-10-09,126714
+104,Club #104,Orlando,FL,Southeast,2020-02-15,90378
+105,Club #105,Atlanta,GA,Southeast,2021-06-25,106571
+106,Club #106,Charlotte,NC,Southeast,2017-03-24,100431
+107,Club #107,Dallas,TX,South,2022-03-27,90716
+108,Club #108,Chicago,IL,Midwest,2015-04-27,79809
+109,Club #109,Denver,CO,Mountain,2018-09-30,80982
+110,Club #110,Phoenix,AZ,Southwest,2016-07-22,71686
+111,Club #111,San Diego,CA,West,2015-02-20,89409
+112,Club #112,Seattle,WA,Northwest,2020-03-11,70772
+113,Club #113,Las Vegas,NV,West,2016-01-31,96311
+114,Club #114,Newark,NJ,Mid-Atlantic,2019-12-15,127768
+115,Club #115,Miami,FL,Southeast,2020-08-19,128784
