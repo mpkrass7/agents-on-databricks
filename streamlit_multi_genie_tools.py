@@ -14,25 +14,27 @@ import yaml
 
 
 if "DATABRICKS_MODEL" not in st.session_state:
-    # Remove default environment variables
+    # Remove default environment variables so they don't conflict with your own
     os.environ.pop("DATABRICKS_CLIENT_ID", None)
     os.environ.pop("DATABRICKS_CLIENT_SECRET", None)
 
     # Set environment variables from .env file
     st.session_state.host = os.getenv("DATABRICKS_HOST")
     st.session_state.token = os.getenv("DATABRICKS_TOKEN")
-    print(os.environ)
     assert st.session_state.host, "DATABRICKS_HOST environment variable is not set"
     assert st.session_state.token, "DATABRICKS_TOKEN environment variable is not set"
+
     with open("app_config.yaml") as f:
         conf = yaml.safe_load(f)
+        st.session_state.CATALOG = conf["CATALOG"]
+        st.session_state.SCHEMA = conf["SCHEMA"]
         st.session_state.DATABRICKS_MODEL = conf["DATABRICKS_MODEL"]
         st.session_state.GENIE_SPACE_STORE_PERFORMANCE_ID = conf[
             "GENIE_SPACE_STORE_PERFORMANCE_ID"
         ]
         st.session_state.GENIE_SPACE_PRODUCT_INV_ID = conf["GENIE_SPACE_PRODUCT_INV_ID"]
-        st.session_state.DATABRICKS_SERVING_ENDPOINT_NAME = conf[
-            "DATABRICKS_SERVING_ENDPOINT_NAME"
+        st.session_state.VECTOR_SEARCH_INDEX_NAME = conf[
+            "VECTOR_SEARCH_INDEX_NAME"
         ]
         st.session_state.MLFLOW_EXPERIMENT_ID = conf["MLFLOW_EXPERIMENT_ID"]
 

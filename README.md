@@ -100,17 +100,26 @@ The vector search index was hydrated using the process highlighted in the [vecto
 ## To Run the App Locally
 1. Create a virtual env locally using uv `uv venv --python 3.12`
 2. Then, install the requirements using `uv pip install -r requirements.txt`
-3. Make sure your app_config.yaml file is set up with the required variables. You can fill these in yourself or create them by running `scripts/build_dependencies.py`. 
-note: you only need the `MLFLOW_EXPERIMENT_ID` if you want to enable montioring or write to an existing external monitor
+3. Fill out your .env file with your host, a Personal Access Token, and the path to your workspace. Then run `source ./.env` to set the environment variables.
+   Example `.env` file:
 ```
+   DATABRICKS_HOST=https://<your-databricks-instance>
+   DATABRICKS_TOKEN=<your-personal-access-token>
+   APP_WORKSPACE_PATH="/Workspace/Users/your_user_name@databricks.com/your_workspace_folder"
+```
+4. Set up an app_config.yaml file with the required variables. You can make this file yourself or create one by running the `Agent Multi Tool Setup.ipynb` on Databricks and downloading the generated file. Example `app_config.yaml` file:
+```
+CATALOG: ""
+SCHEMA: ""
 DATABRICKS_MODEL: "databricks-claude-3-7-sonnet"
 GENIE_SPACE_STORE_PERFORMANCE_ID: ""
 GENIE_SPACE_PRODUCT_INV_ID: ""
 MLFLOW_EXPERIMENT_ID: ""
-DATABRICKS_SERVING_ENDPOINT_NAME: ""
+VECTOR_SEARCH_INDEX_NAME: "your_catalog.your_schema.your_vector_search_index_name"
 ```
-4. Run the app `streamlit run streamlit_multi_genie_tools.py` (you might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`)
-5. You might have to create a .streamlit folder on the root of the project to control the theme as you might see fit using a `config.toml file`
+See step 2 in [Deploying to Databricks Apps](#deploying-to-databricks-apps) for directions on syncing your local app to your Databricks workspace.
+
+4. Run the app `streamlit run streamlit_multi_genie_tools.py` 
 
 Example `config.toml` file
 ```
@@ -146,13 +155,17 @@ databricks sync --watch . $APP_WORKSPACE_PATH
 - This will upload your code and watch for changes.
 - Exclude files/folders using `.gitignore` if needed.
 
-### 3. Deploy the App
+### 3. Add a resource to the app
+If you run the Agent Multi Tool Setup file, the app needs a secret labeled DATABRICKS_TOKEN to access the resources created.
+Go into your Databricks workspace, click on **Compute > Apps** tab, find your app, and click on the **Resources** tab. Then, add a secret with the name `DATABRICKS_TOKEN` and the value of your Databricks personal access token. One should already exist if you ran the Agent Multi Tool Setup file.
+
+### 4. Deploy the App
 
 After syncing, deploy the app with:
 ```bash
 databricks apps deploy <app-name> --source-code-path $APP_WORKSPACE_PATH
 ```
-- Replace `<app-name>` and the workspace path as appropriate.
+- Replace `<app-name>` as appropriate.
 
 ### 4. View and Use the App
 - Go to your Databricks workspace, click **Compute > Apps** tab, and find your app.
