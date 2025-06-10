@@ -10,9 +10,6 @@ from rich import print
 # Initialize environment variables
 set_tracing_disabled(True)
 
-CATALOG = "mk_fiddles"
-SCHEMA = "genie_multi_agent"
-
 # Initialize clients
 w = WorkspaceClient(host=st.session_state.host, token=st.session_state.token)
 
@@ -95,13 +92,13 @@ def get_product_inventory_info(user_query: str):
 @function_tool
 def get_business_conduct_policy_info(search_query: str) -> str:
     st.write(
-        f'<span style="color:green;">[🛠️TOOL-CALL]: the <a href="https://{st.session_state.host}/explore/data/{CATALOG}/{SCHEMA}/retail_code_of_conduct_index" target="_blank">get_business_conduct_policy_info</a> tool was called</span>',
+        f'<span style="color:green;">[🛠️TOOL-CALL]: the <a href="https://{st.session_state.host}/explore/data/{st.session_state.CATALOG}/{st.session_state.SCHEMA}/retail_code_of_conduct_index" target="_blank">get_business_conduct_policy_info</a> tool was called</span>',
         unsafe_allow_html=True,
     )
     print("INFO: `get_business_conduct_policy_info` tool called")
-
-    index_name = f"{CATALOG}.{SCHEMA}.retail_code_of_conduct_index"
-
+    
+    index_name = f"{st.session_state.CATALOG}.{st.session_state.SCHEMA}.retail_code_of_conduct_index"
+    
     return w.vector_search_indexes.query_index(
         index_name=index_name,
         query_text=search_query,

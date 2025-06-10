@@ -119,7 +119,7 @@ VECTOR_SEARCH_INDEX_NAME: "your_catalog.your_schema.your_vector_search_index_nam
 ```
 See step 2 in [Deploying to Databricks Apps](#deploying-to-databricks-apps) for directions on syncing your local app to your Databricks workspace.
 
-4. Run the app `streamlit run streamlit_multi_genie_tools.py` 
+5. Run the app `streamlit run streamlit_multi_genie_tools.py` 
 
 Example `config.toml` file
 ```
@@ -167,7 +167,7 @@ databricks apps deploy <app-name> --source-code-path $APP_WORKSPACE_PATH
 ```
 - Replace `<app-name>` as appropriate.
 
-### 4. View and Use the App
+### 5. View and Use the App
 - Go to your Databricks workspace, click **Compute > Apps** tab, and find your app.
 - Click the app name to view deployment status and launch the Streamlit UI.
 

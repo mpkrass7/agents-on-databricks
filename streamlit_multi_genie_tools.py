@@ -19,7 +19,7 @@ if "DATABRICKS_MODEL" not in st.session_state:
     os.environ.pop("DATABRICKS_CLIENT_SECRET", None)
 
     # Set environment variables from .env file
-    st.session_state.host = os.getenv("DATABRICKS_HOST")
+    st.session_state.host = os.getenv("DATABRICKS_HOST").replace("https://", "")
     st.session_state.token = os.getenv("DATABRICKS_TOKEN")
     assert st.session_state.host, "DATABRICKS_HOST environment variable is not set"
     assert st.session_state.token, "DATABRICKS_TOKEN environment variable is not set"
