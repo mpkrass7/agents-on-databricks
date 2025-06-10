@@ -1,1 +1,4 @@
 command: ['streamlit', 'run', 'streamlit_multi_genie_tools.py']
+env:
+  - name: DATABRICKS_TOKEN
+    valueFrom: DATABRICKS_TOKEN

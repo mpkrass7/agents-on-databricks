@@ -1,6 +1,7 @@
 import asyncio
 import atexit
 import logging
+import os
 import warnings
 
 import mlflow
@@ -9,11 +10,20 @@ from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabl
 from databricks.sdk import WorkspaceClient
 from mlflow.tracing.destination import Databricks
 from openai import AsyncOpenAI
-from databricks.sdk.core import Config
 import yaml
 
 
-if "databricks_model" not in st.session_state:
+if "DATABRICKS_MODEL" not in st.session_state:
+    # Remove default environment variables
+    os.environ.pop("DATABRICKS_CLIENT_ID", None)
+    os.environ.pop("DATABRICKS_CLIENT_SECRET", None)
+
+    # Set environment variables from .env file
+    st.session_state.host = os.getenv("DATABRICKS_HOST")
+    st.session_state.token = os.getenv("DATABRICKS_TOKEN")
+    print(os.environ)
+    assert st.session_state.host, "DATABRICKS_HOST environment variable is not set"
+    assert st.session_state.token, "DATABRICKS_TOKEN environment variable is not set"
     with open("app_config.yaml") as f:
         conf = yaml.safe_load(f)
         st.session_state.DATABRICKS_MODEL = conf["DATABRICKS_MODEL"]
@@ -21,7 +31,9 @@ if "databricks_model" not in st.session_state:
             "GENIE_SPACE_STORE_PERFORMANCE_ID"
         ]
         st.session_state.GENIE_SPACE_PRODUCT_INV_ID = conf["GENIE_SPACE_PRODUCT_INV_ID"]
-        st.session_state.DATABRICKS_SERVING_ENDPOINT_NAME = conf["DATABRICKS_SERVING_ENDPOINT_NAME"]
+        st.session_state.DATABRICKS_SERVING_ENDPOINT_NAME = conf[
+            "DATABRICKS_SERVING_ENDPOINT_NAME"
+        ]
         st.session_state.MLFLOW_EXPERIMENT_ID = conf["MLFLOW_EXPERIMENT_ID"]
 
 
@@ -38,8 +50,6 @@ warnings.filterwarnings("ignore", category=ResourceWarning)
 # Suppress warnings that mention AttributeError in their message
 warnings.filterwarnings("ignore", message=".*AttributeError.*")
 
-
-DB_CONFIG = Config()
 
 set_tracing_disabled(True)
 
@@ -58,9 +68,9 @@ except Exception as e:
     logging.warning(f"Failed to initialize MLflow logging: {str(e)}")
 
 # Initialize clients
-w = WorkspaceClient()
+w = WorkspaceClient(host=st.session_state.host, token=st.session_state.token)
 sync_client = w.serving_endpoints.get_open_ai_client()
-client = AsyncOpenAI(base_url=sync_client.base_url, api_key=DB_CONFIG.token)
+client = AsyncOpenAI(base_url=sync_client.base_url, api_key=st.session_state.token)
 
 
 # Register a cleanup function to properly close the async client at exit
@@ -74,12 +84,6 @@ async def close_client():
 
 # Register the cleanup to run at exit
 atexit.register(lambda: asyncio.run(close_client()))
-
-try:
-    w = WorkspaceClient()
-except Exception as e:
-    logging.warning(f"Failed to initialize Databricks workspace client: {str(e)}")
-    w = None
 
 # Set page configuration
 st.set_page_config(
