@@ -33,9 +33,7 @@ if "DATABRICKS_MODEL" not in st.session_state:
             "GENIE_SPACE_STORE_PERFORMANCE_ID"
         ]
         st.session_state.GENIE_SPACE_PRODUCT_INV_ID = conf["GENIE_SPACE_PRODUCT_INV_ID"]
-        st.session_state.VECTOR_SEARCH_INDEX_NAME = conf[
-            "VECTOR_SEARCH_INDEX_NAME"
-        ]
+        st.session_state.VECTOR_SEARCH_INDEX_NAME = conf["VECTOR_SEARCH_INDEX_NAME"]
         st.session_state.MLFLOW_EXPERIMENT_ID = conf["MLFLOW_EXPERIMENT_ID"]
 
 

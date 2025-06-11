@@ -71,20 +71,6 @@ The vector search index was hydrated using the process highlighted in the [vecto
 
 ---
 
-## Quickstart
-
-1. Clone this repo and install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Set up your `.env` file with Databricks credentials and model info.
-3. Run the app:
-   ```bash
-   streamlit run streamlit_multi_genie_tools.py
-   ```
-
----
-
 ## Customization
 - Update the Genie room IDs or Databricks model in your `.env` file to point to your own resources.
 - The UI and agent instructions can be customized in `streamlit_multi_genie_tools.py`.
