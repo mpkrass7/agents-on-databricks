@@ -4,6 +4,7 @@ import logging
 import os
 import warnings
 
+import dotenv
 import mlflow
 import streamlit as st
 from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabled
@@ -18,11 +19,20 @@ if "DATABRICKS_MODEL" not in st.session_state:
     os.environ.pop("DATABRICKS_CLIENT_ID", None)
     os.environ.pop("DATABRICKS_CLIENT_SECRET", None)
 
-    # Set environment variables from .env file
-    st.session_state.host = os.getenv("DATABRICKS_HOST").replace("https://", "")
-    st.session_state.token = os.getenv("DATABRICKS_TOKEN")
-    assert st.session_state.host, "DATABRICKS_HOST environment variable is not set"
-    assert st.session_state.token, "DATABRICKS_TOKEN environment variable is not set"
+    try:
+        st.session_state.host = os.environ["DATABRICKS_HOST"].replace("https://", "")
+        st.session_state.token = os.environ["DATABRICKS_TOKEN"]
+        mlflow.set_tracking_uri("databricks")
+    except KeyError:
+        print("Error: DATABRICKS_HOST or DATABRICKS_TOKEN environment variable is not set.")
+        print("Error: DATABRICKS_TOKEN environment variable is not set.")
+        print("Attempting to load from workspace")
+        dotenv.load_dotenv()
+        st.session_state.host = WorkspaceClient().config.host.replace("https://", "")
+        st.session_state.token = WorkspaceClient().tokens.create().token_value
+        mlflow.set_tracking_uri(f"databricks://{os.getenv("DATABRICKS_CONFIG_PROFILE", "DEFAULT")}")
+
+    assert st.session_state.token, "Failed to set DATABRICKS_TOKEN environment variable"
 
     with open("app_config.yaml") as f:
         conf = yaml.safe_load(f)
@@ -33,7 +43,6 @@ if "DATABRICKS_MODEL" not in st.session_state:
             "GENIE_SPACE_STORE_PERFORMANCE_ID"
         ]
         st.session_state.GENIE_SPACE_PRODUCT_INV_ID = conf["GENIE_SPACE_PRODUCT_INV_ID"]
-        st.session_state.VECTOR_SEARCH_INDEX_NAME = conf["VECTOR_SEARCH_INDEX_NAME"]
         st.session_state.MLFLOW_EXPERIMENT_ID = conf["MLFLOW_EXPERIMENT_ID"]
 
 
@@ -56,7 +65,7 @@ set_tracing_disabled(True)
 # Initialize MLflow logging if configured (make this optional)
 try:
     if st.session_state.MLFLOW_EXPERIMENT_ID:
-        mlflow.set_registry_uri("databricks")
+        
         mlflow.tracing.set_destination(
             Databricks(experiment_id=st.session_state.MLFLOW_EXPERIMENT_ID)
         )
@@ -239,7 +248,7 @@ with st.container():
                 <li>What was the total sales for store 110 last year?</li>
                 <li>Based on our current inventory snapshot, give me the store id that has the highest on order for baby products?</li>
                 <li>What is the overtime policy for vendors?</li>
-                <li>Generate sales forecast for store 110 for the next 6 months?</li>
+                <li>Generate a sales forecast for store 110 for the next 6 months</li>
             </ul>
         </div>
         """,
